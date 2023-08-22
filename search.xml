@@ -1,0 +1,1801 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  <entry>
+    <title>Mysql8-root密码忘记找回</title>
+    <url>/2021/06/07/Mysql8-root%E5%AF%86%E7%A0%81%E5%BF%98%E8%AE%B0%E6%89%BE%E5%9B%9E/</url>
+    <content><![CDATA[停止 Mysql 服务brew services stop mysql
+
+进入 Mysql 安装目录// 查看mysql安装目录：brew info mysql
+cd /usr/local/Cellar/mysql/8.0.16/bin
+
+启动 Mysql，免密登录./mysqld_safe --skip-grant-tables --user=root &amp;
+
+修改密码mysql -uroot
+update mysql.user set authentication_string=&#39;&#39; where user=&#39;root&#39;;
+
+关闭 Mysql 服务ps -ef | grep mysql
+kill 9 【mysql进程号】
+
+通过brew启动mysql服务，修改root密码brew services start mysql
+mysql -uroot -p (提示输入密码时直接enter)
+ALTER user &#39;root&#39;@&#39;localhost&#39; IDENTIFIED BY &#39;password&#39;;
+
+]]></content>
+      <tags>
+        <tag>Mysql</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Composer required 内存溢出解决办法</title>
+    <url>/2021/05/06/composer-required-%E5%86%85%E5%AD%98%E6%BA%A2%E5%87%BA%E8%A7%A3%E5%86%B3%E5%8A%9E%E6%B3%95/</url>
+    <content><![CDATA[在使用 composer 过程中出现内存溢出错误，只需要暂时将内存设置为没有限制COMPOSER_MEMORY_LIMIT=-1 composer required(install、update)
+
+]]></content>
+      <tags>
+        <tag>Composer</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Elasticsearch 基础操作</title>
+    <url>/2021/05/17/es-%E5%9F%BA%E7%A1%80%E6%93%8D%E4%BD%9C/</url>
+    <content><![CDATA[查询组合查询GET news202010/_search
+&#123;
+ &quot;query&quot;: &#123;
+   &quot;match&quot;: &#123;
+     &quot;textSrc&quot;: &quot;海底捞&quot;
+   &#125;
+ &#125;
+&#125;
+
+// and
+GET news202010/_search
+&#123;
+ &quot;query&quot;: &#123;
+   &quot;bool&quot;: &#123;
+     &quot;must&quot;: [
+       &#123;
+         &quot;match&quot;: &#123;
+           &quot;mediaNameSrc&quot;: &quot;搜狐&quot;
+         &#125;
+       &#125;,
+       &#123;
+         &quot;match&quot;: &#123;
+          li &quot;countryName&quot;: &quot;中国&quot;
+         &#125;
+       &#125;
+     ]
+   &#125;
+&#125;
+
+// or
+GET news202010/_search
+&#123;
+ &quot;query&quot;: &#123;
+   &quot;bool&quot;: &#123;
+     &quot;should&quot;: [
+       &#123; &quot;match&quot;: &#123; &quot;textSrc&quot;: &quot;美食&quot; &#125; &#125;,
+       &#123; &quot;match&quot;: &#123; &quot;textSrc&quot;: &quot;海底捞&quot; &#125; &#125;
+     ]
+   &#125;
+ &#125;
+&#125;
+
+// range
+GET weibo202105/_search
+&#123;
+  &quot;query&quot;: &#123;
+    &quot;bool&quot;: &#123;
+      &quot;should&quot;: [
+        &#123;
+          &quot;match&quot;: &#123;
+            &quot;textSrc&quot;: &quot;青城山&quot;
+          &#125;
+        &#125;,
+        &#123;
+          &quot;match&quot;: &#123;
+            &quot;textSrc&quot;: &quot;天台山&quot;
+          &#125;
+        &#125;
+      ],
+      &quot;filter&quot;: &#123;
+        &quot;range&quot;: &#123;
+          &quot;time&quot;: &#123;
+            &quot;gte&quot;: &quot;2021-05-18 09:37:15&quot;,
+            &quot;lte&quot;: &quot;2021-05-21 09:37:15&quot;
+          &#125;
+        &#125;
+      &#125;
+    &#125;
+  &#125;
+&#125;
+
+字段过滤GET news202010/_search
+&#123;
+ &quot;query&quot;: &#123;
+   &quot;match&quot;: &#123;
+     &quot;textSrc&quot;: &quot;海底捞&quot;
+   &#125;
+ &#125;,
+ &quot;_source&quot;: [&quot;mediaTname&quot;]
+&#125;
+
+排序GET news202010/_search
+&#123;
+ &quot;query&quot;: &#123;
+   &quot;match&quot;: &#123;
+     &quot;textSrc&quot;: &quot;海底捞&quot;
+   &#125;
+ &#125;,
+ &quot;sort&quot;: [
+   &#123;
+     &quot;pubtime&quot;://字段 &#123;
+       &quot;order&quot;: &quot;desc&quot;
+     &#125;
+   &#125;
+ ]
+&#125;
+
+分页GET news202010/_search
+&#123;
+ &quot;query&quot;: &#123;
+   &quot;match&quot;: &#123;
+     &quot;textSrc&quot;: &quot;海底捞&quot;
+   &#125;
+ &#125;,
+ &quot;sort&quot;: [
+   &#123;
+     &quot;pubtime&quot;: &#123;
+       &quot;order&quot;: &quot;desc&quot;
+     &#125;
+   &#125;
+ ],
+ &quot;from&quot;: 0,
+ &quot;size&quot;: 20
+&#125;
+
+]]></content>
+      <tags>
+        <tag>Elasticsearch</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>CentOs 7 下安装 wkhtmltopdf</title>
+    <url>/2021/05/06/centos7-%E4%B8%8B%E5%AE%89%E8%A3%85-wkhtmltopdf/</url>
+    <content><![CDATA[两种方式安装，其中方法一比较顺利方法一
+安装依赖yum install -y fontconfig libX11 libXext libXrender libjpeg libpng xorg-x11-fonts-75dpi xorg-x11-fonts-Type1
+
+
+下载 wkhtmltopdfwget https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-1/wkhtmltox-0.12.6-1.centos7.x86_64.rpm
+
+
+解压 wkhtmltopdfrpm -ivh wkhtmltox-0.12.6-1.centos7.x86_64.rpm
+
+
+查看 wkhtmltopdfwhereis wkhtmltopdf
+
+
+
+方法二：在 laravel 项目中使用 composer 安装
+composer 安装
+$ composer require h4cc/wkhtmltopdf-amd64 0.12.x
+$ composer require h4cc/wkhtmltoimage-amd64 0.12.x
+
+
+接下来将安装好的 wkhtmltopdf 复制到 Linux 系统可执行命令的目录中
+cp vendor/h4cc/wkhtmltoimage-amd64/bin/wkhtmltoimage-amd64 /usr/local/bin/
+cp vendor/h4cc/wkhtmltopdf-amd64/bin/wkhtmltopdf-amd64 /usr/local/bin/
+//并使其可执行：
+chmod +x /usr/local/bin/wkhtmltoimage-amd64 
+chmod +x /usr/local/bin/wkhtmltopdf-amd64
+
+
+
+可能存在的问题
+中文字体无法显示// 下载 windows 宋体字体，将 simsunbd.ttf 文件导入到 centos 系统 /usr/share/fonts/chinese/TrueType 文件目录下
+
+
+
+]]></content>
+      <tags>
+        <tag>wkhtmltopdf</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Docker 学习</title>
+    <url>/2021/05/06/docker-%E5%AD%A6%E4%B9%A0/</url>
+    <content><![CDATA[Docker 概述1. docker 为什么会出现
+环境不统一
+环境配置十分麻烦，部署费时费力
+docker 的思想来源于集装箱
+docker 通过隔离机制，可以将服务器利用到极致
+
+2. docker 可以做什么容器化技术不是模拟一个完整的操作系统
+比较 docker 和传统的虚拟技术的不同：
+
+传统虚拟机，虚拟出一个硬件，运行一个完整的操作系统，然后在这个系统上面安装运行软件
+容器内的应用直接运行在宿主机的内容，容器没有自己的内核，也没有虚拟我们的硬件，所以轻便
+每个容器间相互隔离，每个容器内部都有一个属于自己的文件系统，互不影响
+
+DevOps（开发、运维）
+
+应用更快捷的交付和部署
+
+更便捷的升级和扩缩容
+
+更简单的系统运维
+在容器化之后，我们的开发，测试环境都是高度的一致
+
+更高效的计算资源利用
+docker 是内核级别的虚拟化，可以在一个物理机上运行很多的容器实例。服务器性能可以被压榨到极致
+
+
+Docker 安装1. Docker 的基本组成![image-20200716140943286](/Users/zyyt/Library/Application Support/typora-user-images/image-20200716140943286.png)
+镜像（image）：docker 镜像就好比一个模板，可以通过这个模板创建容器服务，通过镜像可以创建多个容器（最终项目运行在容器中）
+容器（container）：利用容器技术，可以独立运行一个或者一组应用，通过镜像来创建
+启动、停止、删除等基本命令（可以理解为一个简易的linux系统）
+仓库（repository）：存放镜像的地方；分为公有仓库和私有仓库
+docker hub（默认是国外的）
+安装 docker
+docker run的流程
+
+开始，docker 在本机寻找镜像，判断本机是否有镜像
+有，运行这个镜像；否，去docker hub 上下载
+在docker hub 上是否能找到这个镜像，找不到就返回错误
+下载镜像到本地，运行这个镜像
+
+底层原理
+docker 是怎么工作的
+
+docker 是一个 client-server结构的系统，docker的守护进程运行在主机，通过 socket从客户端访问
+dockerserver 接受到 docker-client的指令，执行命令
+
+docker 为什么比虚拟机快
+
+docker有比虚拟机更少的抽象层
+docker 利用的是宿主机的内核，虚拟机需要 guest os
+新建一个容器的时候，docker 不需要像虚拟机重新加载一个操作系统内核，避免引导，虚拟机需要加载一个 guest os
+
+Docker 命令
+帮助命令
+docker version # 显示 docker 的版本信息
+docker info # 显示 docker 的系统信息，包括系统镜像和数量
+docker help 
+
+
+镜像命令
+docker images # 查看主机上的所有镜像
+[root@iZ8vbcrus31oj3y0u2w3svZ ~]# docker images
+REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+hello-world         latest              bf756fb1ae65        6 months ago        13.3kB
+
+#解释
+REPOSITORY 镜像的仓库源
+TAG                 镜像的标签
+IMAGE ID     镜像的ID
+CREATED         镜像的创建时间
+SIZE             镜像的大小
+
+# 可选项
+Options:
+  -a              显示所有镜像
+  -q             只显示镜像的 ID
+
+docker search # 搜索镜像
+[root@iZ8vbcrus31oj3y0u2w3svZ ~]# docker search mysql
+NAME                              DESCRIPTION                                     STARS               OFFICIAL            AUTOMATED
+mysql                             MySQL is a widely used, open-source relation…   9735                [OK]
+mariadb                           MariaDB is a community-developed fork of MyS…   3552                [OK]
+
+# 可选项
+--filter=start=3000 # 表示搜索收藏大于 3000 的镜像
+
+docker pull # 下载镜像
+# 下载镜像 docker pull 镜像名称[:tag]
+[root@iZ8vbcrus31oj3y0u2w3svZ ~]# docker pull mysql
+Using default tag: latest # 如果不写 tag，默认下载最新的 tag
+latest: Pulling from library/mysql
+8559a31e96f4: Pull complete # 分成下载，docker image 的核心，联合文件系统
+d51ce1c2e575: Pull complete
+c2344adc4858: Pull complete
+fcf3ceff18fc: Pull complete
+16da0c38dc5b: Pull complete
+b905d1797e97: Pull complete
+4b50d1c6b05c: Pull complete
+571e8a282156: Pull complete
+e7cc823c6090: Pull complete
+61161ba7d2fc: Pull complete
+74f29f825aaf: Pull complete
+d29992fd199f: Pull complete
+Digest: sha256:fe0a5b418ecf9b450d0e59062312b488d4d4ea98fc81427e3704f85154ee859c # 签名信息
+Status: Downloaded newer image for mysql:latest
+docker.io/library/mysql:latest # 真实地址 == docker pull docker.io/library/mysql:latest
+
+docker rmi # 删除镜像
+docker rmi -f 容器id # 按id 删除镜像
+docker rmi -f $(docker images -aq) # 删除全部镜像
+
+
+容器命令
+
+新建容器并启动
+docker run[可选参数] image
+
+# 参数说明
+-name=&quot;Name&quot;     容器名称，用来区分容器
+-d                         后台方式运行
+-it                     使用交互方式运行，进入容器查看内容
+-p                         指定容器的端口 -p8080:8080
+-P dap               随机映射端口
+    
+# 测试
+[root@iZ8vbcrus31oj3y0u2w3svZ ~]# docker run -it centos
+[root@ca30f0ae3fd6 /]# ls
+bin  dev  etc  home  lib  lib64  lost+found  media  mnt  opt  proc  root  run  sbin  srv  sys  tmp  usr  var
+
+
+列出所有运行的容器
+# 正在运行的容器
+[root@iZ8vbcrus31oj3y0u2w3svZ /]# docker ps
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
+# 查看之前运行过的容器
+[root@iZ8vbcrus31oj3y0u2w3svZ /]# docker ps -a
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS                          PORTS               NAMES
+ca30f0ae3fd6        centos              &quot;/bin/bash&quot;         2 minutes ago       Exited (0) About a minute ago                       compassionate_engelbart
+0ec2b1b3f3be        centos              &quot;/bin/bash&quot;         4 minutes ago       Exited (0) 4 minutes ago                            kind_ishizaka
+b9045bad84a7        bf756fb1ae65        &quot;/hello&quot;            3 hours ago         Exited (0) 3 hours ago                              trusting_payne
+
+-n 显示最近创建的容器
+-q 只显示容器的编号
+
+
+删除容器
+docker rm 容器 id # 删除指定的容器，不能删除正在运行的容器，如果要强制删除 rm -f
+docker rm -f $(docker ps -aq) # 删除所有的容器
+docker ps -a -q | xargs rm # 删除所有容器
+
+
+退出容器
+exit # 停止容器并退出
+
+
+启动和停止容器的操作
+docker start 容器id             #启动容器
+docker restart 容器id            #重启容器
+docker stop 容器id                #停止当前正在运行的容器
+docker kill 容器id                # 强制停止的当前容器
+
+
+
+
+常用的其他命令
+
+后台启动
+docker run -d 镜像名称
+
+# 常见的坑，docker 容器使用后台运行，就必须要有个前台进程，docker 发现没有应用，就会自动停止
+# nginx 容器启动后，发现自己没有提供服务，就会立刻停止，就是没有程序了
+
+
+查看日志
+docker logs -f -t --tail 10 容器id #显示指定行数的日志
+docker logs -f -t 容器id # 显示全部的日志
+
+
+查看容器中的进程信息
+docker top 容器id 
+
+
+查看元数据
+docker inspect 容器id
+
+
+进入当前正在运行的容器
+# 我们容器通常是使用后台方式运行的，现在需要进入容器
+# 命令
+docker exec 容器id # 进入容器后，开启一个新的终端，可以在里面操作（常用）
+docker arrach 容器 id #进入容器正在执行的终端，不会启动新的进程
+
+
+从容器中拷贝文件到主机上
+docker cp 容器id:容器内路径 目的地路径
+
+# 测试
+[root@iZ8vbcrus31oj3y0u2w3svZ home]# ll
+总用量 4
+drwx------ 2 www www 4096 3月  24 22:04 www
+[root@iZ8vbcrus31oj3y0u2w3svZ home]# docker ps -a
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
+[root@iZ8vbcrus31oj3y0u2w3svZ home]# docker run -it centos
+[root@753e672d39fd /]# cd /home
+[root@753e672d39fd home]# touch test.java
+[root@753e672d39fd home]# exit
+exit
+[root@iZ8vbcrus31oj3y0u2w3svZ home]# docker ps -a
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS                     PORTS               NAMES
+753e672d39fd        centos              &quot;/bin/bash&quot;         23 seconds ago      Exited (0) 7 seconds ago                       relaxed_gould
+[root@iZ8vbcrus31oj3y0u2w3svZ home]# docker cp 753e672d39fd:/home/test.java /home
+[root@iZ8vbcrus31oj3y0u2w3svZ home]# ll
+总用量 4
+-rw-r--r-- 1 root root    0 7月  16 18:15 test.java
+drwx------ 2 www  www  4096 3月  24 22:04 www
+[root@iZ8vbcrus31oj3y0u2w3svZ home]#
+
+
+常用命令小结
+attach             # 当前 shell 下，attach 链接指定运行镜像
+build             # 通过 Dockerfile 定制镜像
+commit             # 提交当前容器为新的镜像
+cp                     # 从容器中拷贝指定文件或者目录到宿主机中
+create             # 创建一个新的容器，同 run ，但不启动容器
+diff                 # 查看 docker 容器的变化
+events             # 从docker 服务获取容器实时时间
+exec                 # 在已存在的容器上运行命令
+export             # 到处容器的内容流作为一个 tar 归档文件
+history         # 展示一个镜像形成历史
+images             # 列出系统当前镜像
+import             # 从 tar 包中的内容创建一个新的而文件系统镜像
+info                 # 显示系统相关信息
+inspect         # 查看容器详细信息
+kill                 # kill 指定 docker 容器
+load                 # 从一个 tar 包中加载一个镜像
+login             # 注册或者登陆一个 docker 源服务器
+logout             # 从当前源登出
+logs                 # 查看当前容器日志信息
+port                 # 查看映射端口对应的容器内部源端口
+pause             # 暂停容器
+ps                     # 列出容器列表
+pull                 # 从docker 镜像源服务器拉去指定镜像
+push                 # 推送指定镜像或者库镜像只 docker源服务器
+restart         # 重启运行的容器
+rm                     # 删除一个或者多个容器
+rmi                 # 移除一个或者多个镜像
+run                 # 创建一个新的容器并运行一个命令
+save                 # 保存一个镜像为一个 tar 包（对应 load）
+search             # 在docker hub 中搜索镜像
+start             # 启动容器
+stop                 # 停止容器
+tag                 # 给源中镜像打标签
+top                 # 查看容器中运行的进程
+unpause         # 取消暂停容器
+version         # 查看 docker 版本信息
+wait                 # 截取容器停止时退出状态值
+
+
+安装 nginx
+# 1. 下载nginx镜像
+docker search nginx
+docker pull nginx
+
+# 2. 运行容器
+docker run -d --name nginx01 -p 3344:80 nginx
+
+# 3. 进入容器
+docker exec -it nginx01 /bin/bash
+
+
+安装 es
+docker run -d --name elasticsearch  -p 9200:9200 -p 9300:9300 -e &quot;discovery.type=single-node&quot; -e ES_JAVA_OPTS=&quot;-Xms64m -Xmx512m&quot; elasticsearch:7.6.2
+
+#-e ES_JAVA_OPTS=&quot;-Xms64m -Xmx512m&quot; 限制内存大小
+
+[root@iZ8vbcrus31oj3y0u2w3svZ ~]# curl localhost:9200
+&#123;
+  &quot;name&quot; : &quot;ff85ed481a48&quot;,
+  &quot;cluster_name&quot; : &quot;docker-cluster&quot;,
+  &quot;cluster_uuid&quot; : &quot;FVGcHuJJTlaOr97RmCdJEQ&quot;,
+  &quot;version&quot; : &#123;
+    &quot;number&quot; : &quot;7.6.2&quot;,
+    &quot;build_flavor&quot; : &quot;default&quot;,
+    &quot;build_type&quot; : &quot;docker&quot;,
+    &quot;build_hash&quot; : &quot;ef48eb35cf30adf4db14086e8aabd07ef6fb113f&quot;,
+    &quot;build_date&quot; : &quot;2020-03-26T06:34:37.794943Z&quot;,
+    &quot;build_snapshot&quot; : false,
+    &quot;lucene_version&quot; : &quot;8.4.0&quot;,
+    &quot;minimum_wire_compatibility_version&quot; : &quot;6.8.0&quot;,
+    &quot;minimum_index_compatibility_version&quot; : &quot;6.0.0-beta1&quot;
+  &#125;,
+  &quot;tagline&quot; : &quot;You Know, for Search&quot;
+&#125;
+
+# 查看内存使用情况
+docker stats 容器id
+
+
+使用 kibana 连接 elasticsearch
+通过 linux 内网地址来进行连接；涉及到 docker 的网络原理
+
+
+
+可视化
+
+portainer ，docker 的图形化管理工具，提供一个后台面板供我们操作
+
+
+
+Docker 镜像镜像是什么
+所有的应用，直接打包 docker 镜像，就可以直接跑起来
+如何得到镜像：
+
+从远程仓库下载
+自己制作
+别人给
+
+docker 镜像加载原理 
+联合文件系统
+分层下载
+Commit 镜像docker commit 提交容器成为一个新的副本
+docker commit -m=&#39;提交的描述信息&#39; -a=&#39;作者&#39; 容器 id 目标镜像名称;[tag]
+
+容器数据卷什么是容器数据卷：需要数据可以持久化，容器之间可以有一个数据共享的技术，docker 产生的数据，同步到本地，就是将容器内的目录挂在在 Linux 上面
+容器的持久化和同步操作，容器间也是可以数据共享的
+使用数据卷
+
+使用命令来挂载
+docker run -it -v 主机目录：容器内目录
+
+
+具名挂载和匿名挂载
+# 匿名挂载 -v 的时候只写了容器内的路径
+-v 容器内录路径
+docker rn -d -p -v /etc/nginx nginx
+
+# 查看所有卷的情况
+docker volume ls
+
+# 具名挂载
+docker rn -d -p -v jump-nginx:/etc/nginx nginx
+
+[root@iZ8vbcrus31oj3y0u2w3svZ ~]# docker volume ls
+DRIVER              VOLUME NAME
+local               jump-nginx
+
+# 查看卷详细信息
+docker volume inspect jump-nginx
+
+[root@iZ8vbcrus31oj3y0u2w3svZ ~]# docker volume inspect jump-nginx
+[
+    &#123;
+        &quot;CreatedAt&quot;: &quot;2020-07-17T15:52:03+08:00&quot;,
+        &quot;Driver&quot;: &quot;local&quot;,
+        &quot;Labels&quot;: null,
+        &quot;Mountpoint&quot;: &quot;/var/lib/docker/volumes/jump-nginx/_data&quot;,
+        &quot;Name&quot;: &quot;jump-nginx&quot;,
+        &quot;Options&quot;: null,
+        &quot;Scope&quot;: &quot;local&quot;
+    &#125;
+]
+
+# 指定路径挂载
+docker rn -d -p -v /宿主机地址:/etc/nginx nginx
+
+# 在没有指定目录情况下，默认路径在 /var/lib/docker/volumes/xxx/_data
+
+docker rn -d -p -v jump-nginx:/etc/nginx:ro nginx
+docker rn -d -p -v jump-nginx:/etc/nginx:rw nginx
+
+# ro rw 改变读写权限
+ro readonly 只读，说明这个路径只能通过宿主机来操作，在容器内部无法操作
+rw readwrite 可读可写
+
+# 一旦设置了容器的权限，容器对我们挂载出来的内容就有限定了
+
+
+
+Docker File就是用来构建docker 镜像的构建文件，命令脚本，通过这个脚本可以生成一个镜像，脚本就是一个个的命令，每个命令都是一层
+FROM centos
+
+VOLUME [&quot;volume01&quot;, &quot;volume02&quot;]
+
+CMD echo &quot;++++++ end +++++&quot;
+CMD /bin/bash
+
+docker build dockerfile
+
+Dockerfile 的构建过程基础知识：
+
+每个保留关键字（指令）都必须是大写字母
+执行从上到小顺序执行
+#表示注释
+每个指令都会创建提交一个新的镜像层，并提交
+
+dockerfile 是面向开发的，我们以后要发布项目，做镜像，就需要编写dockerfile 文件，这个文件十分简单
+docker 镜像逐渐成为企业交付的标准，必须要掌握
+步骤：
+Dockerfile：构建文件，定义了一切的步骤，源代码
+DockerImgaes：通过dockerfile构建生成的镜像，最终发布和运行的产品
+Docker容器：容器就是镜像运行起来供服务的
+Dockerfile 的一些指令![image-20200720134234025](/Users/zyyt/Library/Application Support/typora-user-images/image-20200720134234025.png)
+![image-20200720134302424](/Users/zyyt/Library/Application Support/typora-user-images/image-20200720134302424.png)
+FROM                     # 基础镜像，一切从这里开始构建
+MAINTAINER         # 镜像是谁写的，姓名+邮箱
+RUN                     # 镜像构建的要运行的命令
+ADD                     # 步骤，tomcat 镜像，这个 tomcat 的压缩包，添加内容
+WORDDIR             # 镜像的工作目录
+VOLUME                 # 挂载目录
+EXPOSE                 # 暴露端口有配置 -p
+CMD                     # 指定这个容器启动的时候要运行的命令，只有最后一个会生效，可被替代
+ENTRYPOINT         # 指定这个容器启动的时候要运行的命令，可以追加命令
+ONBUILD             # 当构建一个被继承 dockerfile，这个时候就会运行 ONBUILD的指定 ，出发指令
+COPY                     # 将我们的文件拷贝到镜像中
+ENV                     # 构建的时候设置环境变量
+
+
+创建一个自己的 centos
+
+[root@iZ8vbcrus31oj3y0u2w3svZ dockerfile]# cat mydockerfile-centos
+FROM centos
+
+MAINTAINER will.zuo&lt;17683115201@163.com&gt;
+
+ENV MYPATH /usr/local
+WORDDIR $MYPATH
+
+RUN yum -y install vim
+RUN yum -y install net-tools
+
+EXPOSE 80
+
+CMD echo $MYPATH
+CMD echo &quot;+++++++ end ++++++++&quot;
+CMD /bin/bash
+
+# 运行构建文件
+docker build -f mydockerfile-centos -t mycentos .
+
+# 构建成功返回
+Successfully built c54058230aa3
+Successfully tagged mycentos:latest
+
+# 查看是否存在镜像
+[root@iZ8vbcrus31oj3y0u2w3svZ dockerfile]# docker images
+REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+mycentos            latest              c54058230aa3        10 seconds ago      295MB
+will/centos         1.0                 0237c263acb8        2 days ago          215MB
+will.tomcat         1.0                 bccad863bff2        2 days ago          652MB
+tomcat              9.0                 df72227b40e1        3 days ago          647MB
+tomcat              latest              df72227b40e1        3 days ago          647MB
+mysql               5.7                 d05c76dbbfcf        6 days ago          448MB
+nginx               latest              0901fa9da894        9 days ago          132MB
+centos              latest              831691599b88        4 weeks ago         215MB
+elasticsearch       7.6.2               f29a1ee41030        3 months ago        791MB
+
+# 测试运行
+
+对比：之前原生的 centos
+我们之后增加的
+![image-20200720140737677](/Users/zyyt/Library/Application Support/typora-user-images/image-20200720140737677.png)
+
+CMD 和 ENTRYPOINT 的区别
+
+
+cmd 后面的命令会把前面命令覆盖
+entrupoint 命令会直接在后面追加
+
+tomcat 镜像
+
+准备好镜像文件， tomcat 压缩包，jdk压缩包
+编写 dockerfile 文件，官方命名 Dockerfile， build 会自动寻找这个文件，不需要 -f 指定文件
+
+发布镜像docker login -u -p
+
+docker push 镜像名称
+
+发布到阿里云
+创建命名空间
+创建容器镜像
+本地仓库
+参考官方地址
+
+数据卷容器--volumes-from 继承的容器name
+
+容器之间配置信息的传递，数据卷容器的生命周期一直持续到没有容器使用为止，一旦持久化到本地，这个时候本地数据就不会被删除
+Docker 网络理解 docker0# docker 是怎么处理容器网络访问的
+
+# 创建一个新的 tomcat 容器
+docker run -d -P --name tomcat01 tomcat
+
+# 查看容器的内部网络地址 ，容器启动会得到  eth0@if55 ip 地址，docker分配
+docker exec tomcat01 ip addr
+
+[root@iZ8vbcrus31oj3y0u2w3svZ ~]# docker exec tomcat01 ip addr
+1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+54: eth0@if55: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc noqueue state UP group default
+    link/ether 02:42:ac:11:00:02 brd ff:ff:ff:ff:ff:ff link-netnsid 0
+    inet 172.17.0.2/16 brd 172.17.255.255 scope global eth0
+       valid_lft forever preferred_lft forever
+       
+# linux 可以ping通 docker 容器内部
+
+
+原理
+
+
+我们每启动一个 docker 容器，docker 都会给 docker 容器分配一个 ip，只要电脑上安装了 docker ，都会有docker0网卡，桥接模式，使用的技术是 evth-pair 技术
+[root@iZ8vbcrus31oj3y0u2w3svZ ~]# ip addr
+1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+2: eth0: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc pfifo_fast state UP group default qlen 1000
+    link/ether 00:16:3e:0d:8c:bf brd ff:ff:ff:ff:ff:ff
+    inet 172.26.187.10/20 brd 172.26.191.255 scope global dynamic eth0
+       valid_lft 305183217sec preferred_lft 305183217sec
+3: docker0: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc noqueue state UP group default
+    link/ether 02:42:ca:12:cd:e5 brd ff:ff:ff:ff:ff:ff
+    inet 172.17.0.1/16 brd 172.17.255.255 scope global docker0
+       valid_lft forever preferred_lft forever
+55: veth2fece64@if54: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc noqueue master docker0 state UP group default
+    link/ether 4e:f4:f1:c4:64:24 brd ff:ff:ff:ff:ff:ff link-netnsid 0
+
+# 我们发现容器带来的网卡，都是一对对的
+# evth-pair 就是一对虚拟设备接口，他们都是成对出现的，一段连接协议，一段彼此相连
+# 正因为有这个特性，eth-pair 充当一个桥梁，连接各种虚拟网络设备
+# 
+
+
+启动另一个 tomcat 容器
+
+我们来测试 tomcat01 和 tomcat02 是否能ping通
+[root@iZ8vbcrus31oj3y0u2w3svZ ~]# docker exec -it tomcat02 ping 172.17.0.2
+PING 172.17.0.2 (172.17.0.2) 56(84) bytes of data.
+64 bytes from 172.17.0.2: icmp_seq=1 ttl=64 time=0.128 ms
+64 bytes from 172.17.0.2: icmp_seq=2 ttl=64 time=0.106 ms
+64 bytes from 172.17.0.2: icmp_seq=3 ttl=64 time=0.110 ms
+^C
+--- 172.17.0.2 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 1000ms
+rtt min/avg/max/mdev = 0.106/0.114/0.128/0.015 ms
+
+# 结论，容器之间是可以相互ping通的，容器都是共用的一个路由器，所有容器不指定网络情况下，都是 docker0路由的，docker 会给我们的容器分批一个默认的可用 ip
+
+
+
+
+小结
+
+docker 使用的是linux的桥接，宿主机中是一个docker
+docker 中所有的网络接口都是虚拟的，虚拟转发效率高
+只要容器删除，对应网桥一堆就没了
+–linkdocker run -d -P --name tomcat03 --link tomcat02 tomcat
+
+# 测试
+[root@iZ8vbcrus31oj3y0u2w3svZ ~]# docker exec tomcat03 ping tomcat02
+PING tomcat02 (172.17.0.3) 56(84) bytes of data.
+64 bytes from tomcat02 (172.17.0.3): icmp_seq=1 ttl=64 time=0.129 ms
+64 bytes from tomcat02 (172.17.0.3): icmp_seq=2 ttl=64 time=0.108 ms
+64 bytes from tomcat02 (172.17.0.3): icmp_seq=3 ttl=64 time=0.110 ms
+
+探究：inspect
+–link ：就是我们在 hosts 匹配里增加了 
+[root@iZ8vbcrus31oj3y0u2w3svZ ~]# docker exec tomcat03 cat /etc/hosts
+127.0.0.1    localhost
+::1    localhost ip6-localhost ip6-loopback
+fe00::0    ip6-localnet
+ff00::0    ip6-mcastprefix
+ff02::1    ip6-allnodes
+ff02::2    ip6-allrouters
+172.17.0.3    tomcat02 1a989e21dfaa
+172.17.0.4    51220b767658
+
+自定义网路# 查看所有 docker 网络
+
+[root@iZ8vbcrus31oj3y0u2w3svZ ~]# docker network ls
+NETWORK ID          NAME                DRIVER              SCOPE
+0c75c9a7bf94        bridge              bridge              local
+ffecf92be639        host                host                local
+9b9c16be0510        none                null                local
+
+网络模式：
+
+bridge：桥接（默认，自己创建也是使用桥接）
+none：不配置网络
+host：和宿主机共享网络
+container：容器网络连通（少用，局限性很大）
+
+测试
+# 自定义一个网络
+docker network create --driver bridge --subnet 192.168.0.0/16 --gateway 192.168.0.1 mynet
+
+# 通过自定义网络启动容器
+docker run -d -P --network mynet --name tomcat01 tomcat
+
+# 自定义网络可以通过容器名称来进行网络连通
+
+好处：
+
+不同的集群使用不容的网络，保证集群是安全和健康的
+
+网络连通![image-20200720174733412](/Users/zyyt/Library/Application Support/typora-user-images/image-20200720174733412.png)
+# 将容器连接到自定义网络
+docker network connect mynet tomcat03
+
+# 将 tomcat03 这个容器放入到 mynet 这个网络中
+[root@iZ8vbcrus31oj3y0u2w3svZ ~]# docker inspect mynet
+[
+    &#123;
+        &quot;Name&quot;: &quot;mynet&quot;,
+        &quot;Id&quot;: &quot;a327bd0d4d5374b14f3abfa95a3a32e164b9305131a99e6847966386285b25c4&quot;,
+        &quot;Created&quot;: &quot;2020-07-20T17:41:12.217307542+08:00&quot;,
+        &quot;Scope&quot;: &quot;local&quot;,
+        &quot;Driver&quot;: &quot;bridge&quot;,
+        &quot;EnableIPv6&quot;: false,
+        &quot;IPAM&quot;: &#123;
+            &quot;Driver&quot;: &quot;default&quot;,
+            &quot;Options&quot;: &#123;&#125;,
+            &quot;Config&quot;: [
+                &#123;
+                    &quot;Subnet&quot;: &quot;192.168.0.0/16&quot;,
+                    &quot;Gateway&quot;: &quot;192.168.0.1&quot;
+                &#125;
+            ]
+        &#125;,
+        &quot;Internal&quot;: false,
+        &quot;Attachable&quot;: false,
+        &quot;Ingress&quot;: false,
+        &quot;ConfigFrom&quot;: &#123;
+            &quot;Network&quot;: &quot;&quot;
+        &#125;,
+        &quot;ConfigOnly&quot;: false,
+        &quot;Containers&quot;: &#123;
+            &quot;01e420d4390278b31030a060fd8aff77d749cbb6794ab085f4d4d9ecf4896613&quot;: &#123;
+                &quot;Name&quot;: &quot;tomcat03&quot;,
+                &quot;EndpointID&quot;: &quot;ab8c1ac0018293aa2f4e28ab94e157e15ec295b610da74dece83535a3c788610&quot;,
+                &quot;MacAddress&quot;: &quot;02:42:c0:a8:00:04&quot;,
+                &quot;IPv4Address&quot;: &quot;192.168.0.4/16&quot;,
+                &quot;IPv6Address&quot;: &quot;&quot;
+            &#125;,
+            &quot;9765811f0c13b92fe3aa7e8e13f1ef8c32d124a3f02d2c2183a61154f11f7c80&quot;: &#123;
+                &quot;Name&quot;: &quot;tomcat02&quot;,
+                &quot;EndpointID&quot;: &quot;c231ffef794e3034ca6965f65c67c976475d60ab5f8a60baa58c3f7db61ae7a6&quot;,
+                &quot;MacAddress&quot;: &quot;02:42:c0:a8:00:03&quot;,
+                &quot;IPv4Address&quot;: &quot;192.168.0.3/16&quot;,
+                &quot;IPv6Address&quot;: &quot;&quot;
+            &#125;,
+            &quot;aaafbaf9706abb26de1fc30796aec29611343495e4c5422e3c38ed249ddd2e09&quot;: &#123;
+                &quot;Name&quot;: &quot;tomcat01&quot;,
+                &quot;EndpointID&quot;: &quot;d1defe4f0bf4ea1b193413c08fa7a265c68b6c8b0a4e4ea74ba6e1296a9d983b&quot;,
+                &quot;MacAddress&quot;: &quot;02:42:c0:a8:00:02&quot;,
+                &quot;IPv4Address&quot;: &quot;192.168.0.2/16&quot;,
+                &quot;IPv6Address&quot;: &quot;&quot;
+            &#125;
+        &#125;,
+        &quot;Options&quot;: &#123;&#125;,
+        &quot;Labels&quot;: &#123;&#125;
+    &#125;
+]
+
+结论：
+
+假设要跨网络操作别人，就需要使用 docker network connect
+
+
+查看 docker 容器 ip 地址docker inspect 容器名称或 id
+
+]]></content>
+      <tags>
+        <tag>Docker</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>hexo多台电脑同步</title>
+    <url>/2021/05/17/hexo%E5%A4%9A%E5%8F%B0%E7%94%B5%E8%84%91%E5%90%8C%E6%AD%A5/</url>
+    <content><![CDATA[hexo 在多台设备下进行同步设计的思路就是在 github 下创建一个公共的仓库用来存储 hexo 生成的页面，一个私有的仓库来存储 hexo 的源文件
+创建公共仓库创建私有仓库提交源文件到私有仓库上// 在初始源文件目录
+git init
+git add.
+git commit -m &#39;first commit source&#39;
+git remote add xxxxxx
+git push -u origin main
+
+这里会有一些关于主题的注意事项，等我使用了其他主题再来更新
+在其他设备上 clone 源文件使用的前提上要安装好 node、npm、hexo-cli
+npm install -g hexo-cli
+git clone xxxxxx
+cd xxxxxx
+npm install
+
+正常使用 hexohexo clean
+hexo g
+hexo d
+
+// update
+
+更新源文件git add .
+git commit -m &#39;update&#39;
+git push origin main
+
+]]></content>
+      <tags>
+        <tag>hexo</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Laravel 解决跨域</title>
+    <url>/2021/04/30/laravel-%E8%A7%A3%E5%86%B3%E8%B7%A8%E5%9F%9F/</url>
+    <content><![CDATA[1. 安装扩展composer require barryvdh/laravel-cors
+
+2. 发布配置文件php artisan vendor:publish --provider=&quot;Barryvdh\Cors\ServiceProvider&quot;
+
+3. 使用如果需要全局使用，可以在 app/Http/Kernel.php 的 $middleware 中增加 \Barryvdh\Cors\HandleCors::class，
+
+]]></content>
+      <categories>
+        <category>PHP</category>
+      </categories>
+      <tags>
+        <tag>Laravel</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Laravel passport OAuth 认证使用</title>
+    <url>/2021/05/17/laravel-passport-OAuth-%E8%AE%A4%E8%AF%81%E4%BD%BF%E7%94%A8/</url>
+    <content><![CDATA[安装扩展包composer require laravel/passport
+
+数据库迁移php artisan migrate
+
+安装 Passportphp artisan passport:install
+
+在用户模型类中使用 HasApiTokens Trait// 在 User Model 中
+use HasApiTokens;
+
+在 AuthServiceProvider 中注册 Passport 路由public function boot()
+&#123;
+    $this-&gt;registerPolicies();
+
+    Passport::routes();// 这里增加
+&#125;
+
+设置 Passport 在输入 API 请求中使用// 位置 =&gt; config/auth.php
+&#39;api&#39; =&gt; [
+       &#39;driver&#39; =&gt; &#39;passport&#39;, // 这里是修改的
+       &#39;provider&#39; =&gt; &#39;users&#39;,
+],
+
+从 Web 浏览器访问认证 API// 先要在 Http\Kernel.php 的 $middlewareGroups 属性中新增中间件 CreateFreshApiToken
+
+protected $middlewareGroups = [
+    &#39;web&#39; =&gt; [
+        \App\Http\Middleware\EncryptCookies::class,
+        \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
+        \Illuminate\Session\Middleware\StartSession::class,
+        // \Illuminate\Session\Middleware\AuthenticateSession::class,
+        \Illuminate\View\Middleware\ShareErrorsFromSession::class,
+        \App\Http\Middleware\VerifyCsrfToken::class,
+        \Illuminate\Routing\Middleware\SubstituteBindings::class,
+        CreateFreshApiToken::class // 这里是增加的
+    ],
+
+    &#39;api&#39; =&gt; [
+        &#39;throttle:60,1&#39;,
+        &#39;bindings&#39;,
+    ],
+];
+
+在 api.php 中使用Route::prefix(&#39;v1&#39;)
+    -&gt;middleware(&#39;auth:api&#39;)
+    -&gt;group(function () &#123;
+        Route::get(&#39;/user&#39;, function (Request $request) &#123;
+           return $request-&gt;user();
+        &#125;);
+    &#125;);
+
+]]></content>
+      <tags>
+        <tag>Laravel</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>MySql8 远程连接方式</title>
+    <url>/2021/05/06/mysql8_%E8%BF%9C%E7%A8%8B%E8%BF%9E%E6%8E%A5%E6%96%B9%E5%BC%8F/</url>
+    <content><![CDATA[mysql8 默认配置是不开启远程连接的，这里我们需要修改 mysql 数据库的配置来主动开启
+mysql -uroot -p
+use mysql;
+select host,user from user;
+update user set host=&#39;%&#39; where user=root;
+// 更新数据库
+flush privileges;
+
+然后就可以远程登录了
+]]></content>
+      <tags>
+        <tag>MySql</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>vue-cli 初始化原型项目</title>
+    <url>/2021/04/30/vue-cli-%E5%88%9D%E5%A7%8B%E5%8C%96%E5%8E%9F%E5%9E%8B%E9%A1%B9%E7%9B%AE/</url>
+    <content><![CDATA[安装 vue-clinpm install -g @vue/cli
+
+初始化项目vue create project
+
+启动项目cd project
+npm run serve
+
+需要安装的依赖vue add vue-router
+
+]]></content>
+      <tags>
+        <tag>Vue</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>MySql8 修改密码加密方式</title>
+    <url>/2021/05/06/mysql8-%E4%BF%AE%E6%94%B9%E5%AF%86%E7%A0%81%E5%8A%A0%E5%AF%86%E6%96%B9%E5%BC%8F/</url>
+    <content><![CDATA[进入my.cnf 修改配置文件vim /etc/my.cnf
+[mysqld]
+default_authentication_plugin=mysql_native_password
+
+进入 mysql 修改配置ALTER USER &#39;root&#39;@&#39;localhost&#39; IDENTIFIED BY &#39;密码&#39; PASSWORD EXPIRE NEVER;
+ALTER USER &#39;root&#39;@&#39;localhost&#39; IDENTIFIED WITH mysql_native_password BY &#39;密码&#39;; 
+FLUSH PRIVILEGES;
+
+查看加密方式是否被改变use mysql;
+select user,plugin from user;
+// 如果出现两个root用户且加密方式不对，删除不是mysql_native_password的一个
+
+]]></content>
+      <tags>
+        <tag>MySql</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>vue-学习</title>
+    <url>/2021/05/25/vue-%E5%AD%A6%E4%B9%A0/</url>
+    <content><![CDATA[第一个 Vue 应用创建 vue 应用// 这里直接展示的是 script 部分
+var app = new Vue(&#123;
+    el: &quot;#app&quot;,
+    data: &#123;
+        name: &quot;&quot;
+    &#125;
+&#125;)
+
+数据绑定 v-model&lt;div id=&quot;app&quot;&gt;
+    &lt;input v-model=&quot;name&quot; type=&quot;text&quot;&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+var app = new Vue(&#123;
+    el: &quot;#app&quot;,
+    data: &#123;
+        name: &quot;input&quot;
+    &#125;
+&#125;)
+&lt;/script&gt;
+
+生命周期created: 实例完成创建后调用
+mounted: el 挂载到实例上调用，一般第一个业务逻辑会在这里写
+beforeDestroy: 实例销毁之前调用
+
+插值&#123;&#123; 值 &#125;&#125;
+
+过滤器（|）对数据进行过滤， 常用于文本格式化等；过滤的规则是自定义的，通过给 Vue 实例添加 filters 设置
+&lt;div id=&quot;app&quot;&gt;
+    &#123;&#123; date | formatDate &#125;&#125;
+&lt;/div&gt;
+&lt;script&gt;
+var app = new Vue(&#123;
+    el: &quot;#app&quot;,
+    data: &#123;&#125;,
+    filters: &#123;
+        formatDate: function(value) &#123;
+            .....
+        &#125;
+    &#125;
+&#125;)
+&lt;/script&gt;
+
+指令与事件指令是 vue.js 中最常用的一项功能，它带有前缀 v-
+v-bind(简写 ‘:’ )
+v-on(简写 ‘@’)
+// 事件
+
+计算属性]]></content>
+      <tags>
+        <tag>Vue</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>面试总结</title>
+    <url>/2021/05/11/%E9%9D%A2%E8%AF%95%E6%80%BB%E7%BB%93/</url>
+    <content><![CDATA[PHPPHP 是什么
+PHP（”PHP:Hypertext Preprocessor”，超文本预处理器），基于服务端创建动态网站的脚本语言
+
+PHP数据类型
+基本类型
+布尔型（boolean）：true 和 false 两个值
+整型（integer）
+浮点型（float）
+字符串（string）
+
+
+复合类型
+数组（array）
+对象（object）
+
+
+特殊类型
+资源（resource）：存放 PHP 外部数据，比如数据库、文件等
+Null 类型：只有一个值 null，不能运算
+
+
+
+常用的全局变量 $_SERVER// 目录根目录
+    $_SERVER[&#39;DOCUMENT_ROOT&#39;]
+// 请求头部
+    $_SERVER[&#39;HTTP_HOST&#39;]
+// 用户 ip 地址
+    $_SERVER[&#39;REMOTE_ADDR&#39;]
+// 服务器的 ip 地址
+    $_SERVER[&#39;SERVER_ADDR&#39;]
+// 服务器主机名称
+    $_SERVER[&#39;SERVER_NAME&#39;]
+// 当前页面的前一页
+    $_SERVER[&#39;HTTP_REFERER&#39;]
+// 判断接收的数据是 post 还是 get
+    $_SERVER[&#39;REQUEST_METHOD&#39;]
+
+PHP 常用的超全局变量// get 传送方式
+    $_GET
+// post 传送方式
+    $_POST
+// 可以接收到 get 和 post 两种方式的值
+    $_REQUEST
+// 引用全局作用域中可用的全部变量
+    $_GLOBALS
+// 上传文件使用
+    $_FILE
+// 系统环境变量
+    $_SERVER
+// 用于会话控制
+    $_COOKIE
+// 用于会话控制
+    $_SESSION
+// 服务器环境变量
+    $_ENV
+
+比较 include 和 require
+include 引用不存在的文件会产生一个警告但是程序会继续执行；require 引用不存在的文件会导致一个致命的错误，程序停止执行
+include 执行时文件每次都要进行读取；require 文件只处理一次，所以在引用的文件较大时，require 的效率更高
+
+比较 get 和 post 两种传输方式（常规答案）
+数据传输大小： get 传输数据的大小是 2kb，而 post 一般是没有限制的，但是会受内存大小影响，一般通过修改 php.ini 配置文件来修改
+数据传输方式： get 是通过 url 传递参数的，在 url 中可以看到参数；post 是在表单中使用 post 方法提交
+数据安全性：get 参数可见，容易被攻击
+缓存： get 可以被缓存， post 不能被缓存
+
+echo、print、print_r 的区别
+echo 可以输出一个或者多个变量
+print 只能打印一个变量
+print_r 是一个函数，打印的是复合类型的变量，比如 数组、对象
+
+传值赋值和引用赋值的区别
+传值赋值是将变量里的内容赋值一份，被赋值的变量不会被影响
+引用赋值是将两个变量指向同一个内存空间，只要其中一个变量改变就会影响到另一个变量
+
+将 1234567890 改为 1,234,567,890&lt;?php
+    $str = &#39;1234567890&#39;;
+    $strrev = strrev($str);
+    $chunk = chunk_split($strrev, 3, &#39;,&#39;);
+    $result = strrev($chunk);
+    $result = substr($result, 1);
+    echo $result;
+
+session 和 cookie 的区别
+cookie 的数据存放在客户端，session 的数据存放在服务器
+cookie 安全性较差，别人可以分析放在本地的 cookie 进行 cookie 欺骗（CSRF，跨站伪造请求攻击）
+session 会在一定时间内保存在服务器上，当大量的 session 存在，会影响服务器的性能
+单个 cookie 保存的数据长度不能超过 4kb ，很多浏览器都限制一个网址最多能保存 20 个 cookie
+
+如何设置 session 的过期时间session_set_cookie_params()
+
+PHP 常见的设计模型
+策略模式
+是对象的行为模式，是对一组算法的封装，动态的选择需要的算法使用
+
+
+工厂模式
+最常用的实例化对象模式，是用工厂的方法代替 new 操作的一种方式
+
+
+单例模式
+保证某个类只有一个实例，而且自动实例化并向整个系统提供这个实例
+只实例化一次，避免大量的 new 操作，消耗系统和内存资源
+饿汉模式：在类初始化就自行实例化
+懒汉模式：只是在第一次调用的时候进行实例化
+
+
+适配器模式
+将各种截然不同的函数接口封装成一个统一的 API
+
+
+注册模式
+解决全局共享和交换对象
+
+
+观察者模式
+当一个对象发生变化时，依赖它的对象都会收到消息，并自动更新（比如 事件）
+
+
+
+数组常用的函数array_merge(); // 合并数组
+array_push(); // 往数组后追加
+array_unique(); // 去重
+array_keys(); // 获取数组的 key 值
+array_values(); // 获取数据的 value 值
+array_filter(); // 去空
+in_array(); // 数组包含
+count(); // 计算数组的长度
+
+面对对象的特征
+封装：只需要知道这个类是做什么的，不需要关心怎么实现
+继承：子类可以继承父类的属性和方法，也可以重写或者新增属性和方法，增加了代码的可重用
+多态：同一个类的不同对象使用同一个方法可以得到不同的结果，增加了灵活性和重用性
+
+面对对象的五大原则
+单一职责原则：一个类的功能单一
+开放封闭原则：在扩展上是开放的，在更改性能方面是封闭的
+替换原则：子类可以替换父类出现在父类可以出现的地方
+依赖原则：具体依赖抽象，上层依赖下层
+接口隔离原则：模块间要通过接口隔离开，而不是通过具体的类强耦合
+
+PHP7 比 PHP5 性能高
+变量存储字节看小，减少内存占用，提升变量的操作速度
+改善数组结构，数组元素和 hash 映射表分配在同一内存，降低内存占用，提高了 cpu 的缓存命中率
+改进了函数的调用机制，通过优化参数传递的环节，减少了一些指令，提高了执行效率
+
+PHP7 和 PHP5 的区别
+性能提升了 2 倍
+全面一致的支持 64 位
+之前出现的致命错误，现在改为抛出异常
+增加了空结合操作符
+增加了函数返回类型声明
+增加了标量类型声明
+增加了匿名函数
+移除了一些老的不再支持的SPAI（服务器端应用编程端口）和扩展（mysql mssql）
+可以定义常量数组
+
+php.ini 的优化
+内存分配
+zend opcache 缓存操作码
+设置文件上传大小
+设置进程超时时间
+处理会话（将会话存入缓存中而不是数据库）
+缓冲输出（用最少的块输出最多的数据）
+
+抽象和接口的区别
+接口的访问控制必须是 public，抽象三种都可以
+继承接口用 implement，继承抽象用 extends
+声明接口用 interface，声明抽象用 abstract
+接口没有构造函数
+一个类可以继承多个接口，只能继承一个抽象
+
+抽象
+里面至少有一个抽象方法 abstract
+只声明了方面，没有具体实现
+被继承时，子类必须实现继承的所有方法
+子类的访问控制必须比父类更加宽松
+
+接口
+定义的所有方法必须是公有的
+用 interface 来定义接口，用implement 来继承接口
+实现接口必须实现接口里的所有方法
+可以继承多个接口，用逗号分隔
+
+final 关键字
+类声明 final 关键字，不能被继承
+方法声明 final 关键字，不能被重写
+
+yield 生成器及时计算并产出后续值，不占用宝贵的内存，简单的迭代器
+访问修饰符public/protected/private
+
+PHP 常用的魔术常量1. __FILE__ // 完整文件路径或文件名
+2. __LINE__ // 当前行号
+3. __DIR__ // 文件所有目录
+4. __FUNCTION__ // 函数名称
+5. __CLASS__ // 类名称
+6. __METHOD__ // 方法名称
+7. __NAMESPACE__ // 当前命名空间
+
+PHP 常用的魔术方法1. __construct()
+2. __destruct()
+3. __isset()
+4. __toString()
+5. __get()
+6. __set()
+7. __unset()
+8. __clone()
+9. __debugInfo()
+
+单点登录session 共享来实现
+权限系统设计
+用户
+角色
+权限
+用户角色
+角色权限
+
+MySQLSql 语句应该考虑哪些安全性
+防止 sql 注入，对特殊字符进行转义和过滤
+用最小权限原则，最好不用 root 连接数据库
+当 sql 运行出错时，不要把错误信息展示给用户
+
+Sql 索引
+普通索引
+唯一索引
+主键索引
+复合索引
+
+MySQL 索引的优缺点
+优点
+加快查询速度
+可以加速表与表之间的连接
+在使用分组和排序进行检索的时候，可以减少查询中分组和排序的时间
+减少服务器对数据的扫描
+帮助服务器避免排序和临时表
+将随机 I/O 变成顺序 I/O
+
+
+缺点
+占用磁盘空间
+对于写的操作，会降低速度
+创建和维护索引要消耗时间，这种时间随着数据量的增加而增加
+
+
+
+MySQL 什么时候会产生临时表
+union 查询
+order by 和 group by 子句不一样
+distinct 加上 order by 查询
+from 中的子查询
+表连接中，order by 的列不是驱动表中的
+
+什么时候应该创建索引
+经常需要搜索的列上，可以加快搜索的速度
+做为主键的列上
+经常用在 where 子句上的列
+经常用做排序和分组的列
+经常用在连接的列上，主要是一些外键，可以加快连接的速度
+
+什么时候不需要创建索引
+查询中很少使用的列
+只有很少数据值的列
+经常进行增删改的列，频繁更新的列
+数据重复且平均分布的列，比如 男女
+
+什么时候索引失效
+条件中带有 or
+like 模糊查询中以 % 开头
+如果列是字符串，没有用引号引用起来
+使用函数或者四则运算
+判断索引不是某个值 !=
+not in 查询
+
+char 和 varchar 的区别
+char 是定长，不管存储是否达到设定的值，都按设定的值存储，效率较高
+varchar 是变长，存储的字符要比 char 长
+char 的效率比 varchar 要高
+
+优化 SQL 语句
+尽量选择较少的列查询
+在 where 后面频繁使用的字段加上索引
+避免是用 select * 查询
+避免在索引列上做运算，使用 not in 和 &lt;&gt; 等操作
+合理的使用 limit
+合适表分割，在查询较慢的地方使用 explain 分析查询语句
+
+MySQL 中的事务（ACID）
+原子性（A）：一组 sql 要么全部成功要么全部失败
+一致性（C）：一致的从一种状态改变为另一种状态
+隔离型（I）：一个事务未完成之前不会被另一个事务读取
+持久性（D）：一旦食物提交，数据就会永久写入系统
+
+MySQL 优化
+选取合适的字段属性，字段的宽度尽可能的小
+用连接查询来替代子查询
+使用事务
+使用外键
+建立索引
+优化查询语句
+锁定表
+
+数据库的三大范式
+保证每一列都是不可再分的属性值，保证每一列的原子性，减少冗余
+保证每一列都必须依赖主键
+保证每一列都与主键有直接关系，而不是间接关系
+
+数据库内部实现机制
+
+
+MySQL 脏读/虚读/幻读解决方法解决方法：通过事务的隔离级别（读未提交/读已提交/可重复读/串行化）
+
+脏读：指的是一个线程中的事务读取到另一个线程中未提交的数据（读已提交）
+虚读：指的是一个线程中的事务读取到另一个线程中提交的 update 的数据（可重复读/加锁）
+幻读：指的是一个线程中的事务读取到另一个线程中提交的 inster 的数据（串行化）
+
+数据库的存储引擎
+MyISAM
+插入数据快，空间和内存使用比较低
+不支持事务
+数据存储在文件中
+支持表级锁
+
+
+InnoDB
+支持事务/行锁/外键
+数据存储在共享表空间
+支持奔溃后修复
+
+
+Memory
+所有数据在内存中，数据处理速度快
+对表的大小有要求，不能建立太大的表
+安全性不高
+
+
+Archive
+适合查询和存储
+
+
+
+悲观锁和乐观锁
+乐观锁：每次去拿数据都会认为别人不会修改数据，但是在更新数据的时候会判断在此期间有没有更新这个数据，适合多读的场景
+悲观锁：每次去拿数据都会认为别人会修改数据，所以每次都拿数据都会上锁，适合多写的操作
+
+主从复制1. 基本过程
+主库在事务提交时会把数据更作事件记录在二进制文件 binlog 中，主库上的 sync_binlog 参数控制 binlog 日志刷新到磁盘中
+主库推送二进制文件 binlog 到从库的中继日志 relay-log，之后从库根据 relay log 日志做数据变更操作
+
+2. 主要的三个线程
+Binlog dump 线程（主库）
+I/O 线程（从库）
+SQL 线程（从库）
+
+当从库上启动复制，首先创建 I/O 线程连接主库，主库随后创建 Binlog dump 线程读取数据库事件发送给 I/O 线程，I/O 线程读取到事件数据之后更新到从库的中继日志 Relay log 中，之后从库的 SQL 线程读取中继日志中更新的数据库事件并应用
+3. 三种复制方式
+基于 SQL 语句的复制
+ 每条修改数据的 SQL 都会保存在 binlog 日志中
+
+基于行的复制
+ 每行的数据变化都会记录到 binlog 日志中
+
+混合复制模式
+ 基于语句和行混合使用
+
+
+4. 复制的三种常见架构
+一主多从
+ 一个主库多个从库，读写分离，主库主要负责写和实时性较高的读的操作，从库主要负责读取的操作
+
+多级复制
+ 两个 master，多个 slave，其中一个 master 主要负责推送 binlog 日志到 slave
+ 优点：解决了主库的 I/O 负载和网络压力
+ 缺点：数据延时比较大（优化：master2 上选择 BLACKHOLE 引擎来降低延时，原理是 BLACKHOLE 表的数据不会写回到磁盘上，永远是空表，只用来记录 bin log 日志）
+
+双主复制
+ 两个 master 库，适合 DBA 做维护，master1 和 master2 互为主从，写的操作访问 master1 ，读的操作访问 master1 或者 master2
+
+
+5. 复制类型
+异步复制
+  数据库事务提交之后，在主库写入 bin log 日志就可以成功返回给客户端
+
+半同步复制
+  数据库事务提交之后，bin log 不仅要写在主库上，还要同时向从库推送，等到从库收到 bin log 日志后才会返回成功给客户端，如果从库长时间没有返回，则自动调整为异步复制
+
+
+Nginx负载均衡五种策略
+轮询（默认）
+ 每个请求按时间顺序逐一分配到不同后端服务器，如果服务器 down掉，能自动剔除
+
+权重（weight）
+ 指定轮询的几率，weight 和访问比率成正比
+
+ip_hash
+ 解决用户登录信息丢失的情况，每次请求都定位到同一个服务器
+
+Url_hash
+ 按 url 的 hash 结果来分配请求，使每个 url 定向到同一个对应的后端服务器
+
+第三方 fair
+ 按后端服务器响应时间来分配，响应时间短的优先分配
+
+
+反向代理1. 理解反向代理是指代理服务器接收 internet 上的连接请求，然后将请求转发给内部网络上的服务器，并将从服务器上得到的结果返回给 internet 上请求连接的客户端，此时代理服务器对外就变现为一个服务器
+2.为什么使用反向代理
+可以起到保护网站安全的作用，因为任何来自 internet 的请求都必须先经过代理服务器
+通过缓存静态资源，加速 web 请求
+实现负载均衡
+
+HTTPurl 访问网站的过程
+dns 解析，将域名解析为 ip 地址
+
+tcp 连接，tcp 的三次握手
+
+由浏览器发起，告诉服务器要开始请求数据了
+
+由服务器发起，告诉了浏览器准备好了接收数据，可以发起请求
+
+由浏览器发起，告诉服务器马上发送数据，准备接收
+
+
+
+发送请求
+
+接收响应
+
+渲染页面
+
+断开连接，tcp 的四次挥手
+
+由浏览器发起，告诉服务器请求报文发送完毕，准备关闭
+
+由服务器发起，告诉浏览器，请求报文接收完毕，准备关闭，你也准备关闭
+
+由服务器发起，告诉浏览器，响应报文发送完毕，你准备关闭
+
+由浏览器发起，告诉服务器，响应报文接收完毕，准备关闭
+
+
+
+
+常见的 http 状态码
+1xx：请求被接收
+2xx：成功
+3xx：重定向
+4xx：客户端错误
+5xx：服务器错误
+
+301:永久重定向
+302:临时重定向
+401:权限不足，请求认证用户身份信息
+403:拒绝访问
+404:无法找到请求的资源
+405:客户端请求中的方法被禁止
+500:服务器内部错误
+501:此请求方法不被服务器支持且无法被处理
+502:网关错误
+503:服务器繁忙
+504:不能及时响应
+
+osi 的七层模型 和 tcp/ip 四层关系
+   
+        OSI 七层网络模型
+        TCP/IP四层概念模型
+        对应网络协议
+    
+    
+        应用层
+        应用层
+        HTTP、TFTP, FTP, NFS, WAIS、SMTP
+    
+    
+        表示层
+        Telnet, Rlogin, SNMP, Gopher
+    
+    
+        会话层
+        SMTP, DNS
+    
+    
+        传输层
+        传输层
+        TCP, UDP
+    
+    
+        网络层
+        网络层
+        IP, ICMP, ARP, RARP, AKP, UUCP
+    
+    
+        数据链路层
+        数据链路层
+        FDDI, Ethernet, Arpanet, PDN, SLIP, PPP
+    
+    
+        物理层
+        IEEE 802.1A, IEEE 802.2到IEEE 802.11
+    
+
+
+跨域怎么出现的，怎么解决跨域出现：浏览器的同源策略，限制了一个源的文件或者脚本如何和另一个源的资源进行交互，如果没有同源策略，容易收到 XSS/CSRF 等攻击
+解决：
+
+jsonp，利用 &lt;script&gt; 标签没有跨域限制的漏洞，页面可以动态的得到其他源的 json 数据
+
+优点：兼容性好，可以用于主流浏览器的跨域访问问题
+缺点：仅支持 get 方法；不安全，容易遭受 xss 攻击
+
+
+cors 跨域资源共享，分为简单请求和复杂请求
+
+简单请求
+复杂请求，在正式请求之前，增加一次 http 查询请求
+
+
+nginx 的反向代理
+ 配置一个代理服务器做跳板机
+
+node 中间件代理（两次跨域）
+ 实现原理：就是服务器向服务器请求
+
+
+RedisRedis 和 memcached 的区别
+redis 支持更加丰富的数据存储类型（string/hash/list/set/sorted set）；memcached 只支持简单的 key-value 结构
+redis 支持简单的事务
+redis 支持数据持久型，可以将内存中的数据保存在磁盘中
+持久性：
+RDB：在一定周期内，将内存中的数据以快照的形式保存到硬盘的二进制文件
+AOF：redis 将每个收到的写命令都通过 write 函数追加到文件最后，redis 重启会重新执行文件中保存的写命令来在内存中重建整个数据库的内容
+
+
+
+
+redis 只是单核，memcached 是多核
+
+缓存雪崩/穿透
+雪崩：当缓存服务器重启或者是大量缓存在同一时间失效，给后台系统带来很大的压力，导致系统崩溃
+解决：
+当缓存失效时，增加锁来保证某个 key 只有一个线程操作数据库
+分散缓存失效时间
+做二级缓存
+
+
+
+
+穿透：大量请求绕过缓存直接请求数据库
+解决
+对一定不存在的 key 进行过滤，将可能存在 key 放在一个大的 bitmap 中，查询时过滤
+对空值也进行缓存，缓存时间短一点
+
+
+
+
+
+单线程的 redis 为什么这么快
+纯内存操作
+单线程操作，避免了上下文切换
+采用的非阻塞 I/O 多路复用机制
+
+Redis 的数据类型以及每种数据类型的使用场景
+string：最常规的 set/get 操作，一般做一些复杂的技术功能的缓存
+hash：存放结构化的对象
+list：可以做简单的消息队列功能，可以做 redis 分页功能（lrange）
+sort：存储的是不重复的值，适合做全局去重的功能
+sorted set：集合中多了个 score 参数，可以做排行榜应用
+
+Redis 的过期策略以及内存淘汰机制过期策略：
+
+定期删除，没一段时间检查是否有过期 key
+惰性删除，使用时用到这个 key 的时候检查，过期就删除
+
+淘汰机制
+
+从已设置过期时间的数据集中挑选最少使用的数据淘汰 -&gt; volatitle-lru
+从已设置过期时间的数据集中挑选即将过期的数据淘汰 -&gt; volatitle-ttl
+从已设置过期时间的数据集中任意选择数据淘汰 -&gt; volatitle-random
+从数据集中挑选最近最少使用的数据淘汰 -&gt; allkeys-lru
+从数据集中中任意淘汰 allkeys-random
+禁止驱逐数据，新写入会报错 no-enviction
+
+other如何处理高并发
+使用缓存
+优化数据库，提高数据使用效率
+负载均衡
+静态页面
+分布式部署，业务分离
+防盗链
+限制大文件下载
+cdn 加速
+
+怎么解决商品超卖和秒杀的问题
+加锁
+队列
+
+API 安全接口解决方案
+非对称加密 rsa
+  利用公钥和密钥，公钥传递数据，密钥解密获取数据
+
+Md5 加密
+
+令牌 access_token
+
+
+web 安全
+XSS 攻击，跨站脚本攻击：往 web 页面插入可以执行的脚本代码，达到盗取用户信息或者侵犯用户隐私的目的
+攻击方式
+非持久型：诱骗点击 url 链接
+持久型：一般是表单提交
+
+
+防范
+web 渲染的页面必须是来自服务端，做转义
+不要相信前端传递过来的数据，将所有字段转义后处理
+
+
+
+
+CSRF 跨站伪造请求攻击
+攻击方式
+被攻击者登录了网站并保留了 cookie 信息
+访问了危险网站，并受引诱登录了之前的网站
+被攻击者没有做 csrf 防范
+
+
+防范
+正确的使用 get、post请求和cookie
+在非 get 中使用 token加密
+渲染表单加上 csrfToken，后端验证
+
+
+
+
+SQL 注入：没有有效的过滤用户的输入，使攻击者向服务端提交了恶意的 sql 查询代码，导致原 sql 查询逻辑改变
+防范
+数据库最小操作权限
+内容必须转义
+尽量不要使用拼接 sql 语句
+不要将 sql 错误暴露给用户
+
+
+
+
+DDOS 攻击，分布式拒绝服务，使用大量的请求资源导致资源过载，服务不可用
+防范
+网络上做好架构，负载均衡
+限制单个 ip 的访问次数
+关闭不必要的服务
+防火墙
+堆机器
+
+
+
+
+dns 和 http 劫持
+dns：被篡改访问的地址
+http：被篡改被访问的内容
+
+
+
+]]></content>
+      <tags>
+        <tag>面试总结</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>wsl2安装node工具</title>
+    <url>/2021/05/17/wsl2%E5%AE%89%E8%A3%85node%E5%B7%A5%E5%85%B7/</url>
+    <content><![CDATA[安装 curlsudo apt-get install curl
+
+安装 nvmnvm：curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/*/install.sh | bash
+// 版本可以参照最新的 nvm 版本 [nvm github](https://github.com/nvm-sh/nvm)
+
+安装 node LTS 版本nvm install node --lts
+
+查看nvmnvm ls
+
+]]></content>
+      <tags>
+        <tag>wsl2</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>连接 docker mysql 容器</title>
+    <url>/2021/05/06/%E8%BF%9E%E6%8E%A5-docker-mysql-%E5%AE%B9%E5%99%A8/</url>
+    <content><![CDATA[创建新 mysql 容器docker pull mysql
+
+启动 mysql 容器sudo docker run -p 63306:3306 --name mysql -e MYSQL_ROOT_PASSWORD=root -d mysql
+// 将容器的 3306 端口映射到主机的 63306 端口，密码为root
+
+进入mysql容器docker exec -it mysql bash
+
+在主机连接容器mysql -uroot -proot -P63306 -h127.0.0.1
+
+]]></content>
+      <tags>
+        <tag>Docker</tag>
+      </tags>
+  </entry>
+</search>
