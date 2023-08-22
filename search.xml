@@ -1,164 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>Mysql8-root密码忘记找回</title>
-    <url>/2021/06/07/Mysql8-root%E5%AF%86%E7%A0%81%E5%BF%98%E8%AE%B0%E6%89%BE%E5%9B%9E/</url>
-    <content><![CDATA[停止 Mysql 服务brew services stop mysql
-
-进入 Mysql 安装目录// 查看mysql安装目录：brew info mysql
-cd /usr/local/Cellar/mysql/8.0.16/bin
-
-启动 Mysql，免密登录./mysqld_safe --skip-grant-tables --user=root &amp;
-
-修改密码mysql -uroot
-update mysql.user set authentication_string=&#39;&#39; where user=&#39;root&#39;;
-
-关闭 Mysql 服务ps -ef | grep mysql
-kill 9 【mysql进程号】
-
-通过brew启动mysql服务，修改root密码brew services start mysql
-mysql -uroot -p (提示输入密码时直接enter)
-ALTER user &#39;root&#39;@&#39;localhost&#39; IDENTIFIED BY &#39;password&#39;;
-
-]]></content>
-      <tags>
-        <tag>Mysql</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Composer required 内存溢出解决办法</title>
-    <url>/2021/05/06/composer-required-%E5%86%85%E5%AD%98%E6%BA%A2%E5%87%BA%E8%A7%A3%E5%86%B3%E5%8A%9E%E6%B3%95/</url>
-    <content><![CDATA[在使用 composer 过程中出现内存溢出错误，只需要暂时将内存设置为没有限制COMPOSER_MEMORY_LIMIT=-1 composer required(install、update)
-
-]]></content>
-      <tags>
-        <tag>Composer</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Elasticsearch 基础操作</title>
-    <url>/2021/05/17/es-%E5%9F%BA%E7%A1%80%E6%93%8D%E4%BD%9C/</url>
-    <content><![CDATA[查询组合查询GET news202010/_search
-&#123;
- &quot;query&quot;: &#123;
-   &quot;match&quot;: &#123;
-     &quot;textSrc&quot;: &quot;海底捞&quot;
-   &#125;
- &#125;
-&#125;
-
-// and
-GET news202010/_search
-&#123;
- &quot;query&quot;: &#123;
-   &quot;bool&quot;: &#123;
-     &quot;must&quot;: [
-       &#123;
-         &quot;match&quot;: &#123;
-           &quot;mediaNameSrc&quot;: &quot;搜狐&quot;
-         &#125;
-       &#125;,
-       &#123;
-         &quot;match&quot;: &#123;
-          li &quot;countryName&quot;: &quot;中国&quot;
-         &#125;
-       &#125;
-     ]
-   &#125;
-&#125;
-
-// or
-GET news202010/_search
-&#123;
- &quot;query&quot;: &#123;
-   &quot;bool&quot;: &#123;
-     &quot;should&quot;: [
-       &#123; &quot;match&quot;: &#123; &quot;textSrc&quot;: &quot;美食&quot; &#125; &#125;,
-       &#123; &quot;match&quot;: &#123; &quot;textSrc&quot;: &quot;海底捞&quot; &#125; &#125;
-     ]
-   &#125;
- &#125;
-&#125;
-
-// range
-GET weibo202105/_search
-&#123;
-  &quot;query&quot;: &#123;
-    &quot;bool&quot;: &#123;
-      &quot;should&quot;: [
-        &#123;
-          &quot;match&quot;: &#123;
-            &quot;textSrc&quot;: &quot;青城山&quot;
-          &#125;
-        &#125;,
-        &#123;
-          &quot;match&quot;: &#123;
-            &quot;textSrc&quot;: &quot;天台山&quot;
-          &#125;
-        &#125;
-      ],
-      &quot;filter&quot;: &#123;
-        &quot;range&quot;: &#123;
-          &quot;time&quot;: &#123;
-            &quot;gte&quot;: &quot;2021-05-18 09:37:15&quot;,
-            &quot;lte&quot;: &quot;2021-05-21 09:37:15&quot;
-          &#125;
-        &#125;
-      &#125;
-    &#125;
-  &#125;
-&#125;
-
-字段过滤GET news202010/_search
-&#123;
- &quot;query&quot;: &#123;
-   &quot;match&quot;: &#123;
-     &quot;textSrc&quot;: &quot;海底捞&quot;
-   &#125;
- &#125;,
- &quot;_source&quot;: [&quot;mediaTname&quot;]
-&#125;
-
-排序GET news202010/_search
-&#123;
- &quot;query&quot;: &#123;
-   &quot;match&quot;: &#123;
-     &quot;textSrc&quot;: &quot;海底捞&quot;
-   &#125;
- &#125;,
- &quot;sort&quot;: [
-   &#123;
-     &quot;pubtime&quot;://字段 &#123;
-       &quot;order&quot;: &quot;desc&quot;
-     &#125;
-   &#125;
- ]
-&#125;
-
-分页GET news202010/_search
-&#123;
- &quot;query&quot;: &#123;
-   &quot;match&quot;: &#123;
-     &quot;textSrc&quot;: &quot;海底捞&quot;
-   &#125;
- &#125;,
- &quot;sort&quot;: [
-   &#123;
-     &quot;pubtime&quot;: &#123;
-       &quot;order&quot;: &quot;desc&quot;
-     &#125;
-   &#125;
- ],
- &quot;from&quot;: 0,
- &quot;size&quot;: 20
-&#125;
-
-]]></content>
-      <tags>
-        <tag>Elasticsearch</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>CentOs 7 下安装 wkhtmltopdf</title>
     <url>/2021/05/06/centos7-%E4%B8%8B%E5%AE%89%E8%A3%85-wkhtmltopdf/</url>
     <content><![CDATA[两种方式安装，其中方法一比较顺利方法一
@@ -880,53 +722,136 @@ docker network connect mynet tomcat03
       </tags>
   </entry>
   <entry>
-    <title>hexo多台电脑同步</title>
-    <url>/2021/05/17/hexo%E5%A4%9A%E5%8F%B0%E7%94%B5%E8%84%91%E5%90%8C%E6%AD%A5/</url>
-    <content><![CDATA[hexo 在多台设备下进行同步设计的思路就是在 github 下创建一个公共的仓库用来存储 hexo 生成的页面，一个私有的仓库来存储 hexo 的源文件
-创建公共仓库创建私有仓库提交源文件到私有仓库上// 在初始源文件目录
-git init
-git add.
-git commit -m &#39;first commit source&#39;
-git remote add xxxxxx
-git push -u origin main
+    <title>Elasticsearch 基础操作</title>
+    <url>/2021/05/17/es-%E5%9F%BA%E7%A1%80%E6%93%8D%E4%BD%9C/</url>
+    <content><![CDATA[查询组合查询GET news202010/_search
+&#123;
+ &quot;query&quot;: &#123;
+   &quot;match&quot;: &#123;
+     &quot;textSrc&quot;: &quot;海底捞&quot;
+   &#125;
+ &#125;
+&#125;
 
-这里会有一些关于主题的注意事项，等我使用了其他主题再来更新
-在其他设备上 clone 源文件使用的前提上要安装好 node、npm、hexo-cli
-npm install -g hexo-cli
-git clone xxxxxx
-cd xxxxxx
-npm install
+// and
+GET news202010/_search
+&#123;
+ &quot;query&quot;: &#123;
+   &quot;bool&quot;: &#123;
+     &quot;must&quot;: [
+       &#123;
+         &quot;match&quot;: &#123;
+           &quot;mediaNameSrc&quot;: &quot;搜狐&quot;
+         &#125;
+       &#125;,
+       &#123;
+         &quot;match&quot;: &#123;
+          li &quot;countryName&quot;: &quot;中国&quot;
+         &#125;
+       &#125;
+     ]
+   &#125;
+&#125;
 
-正常使用 hexohexo clean
-hexo g
-hexo d
+// or
+GET news202010/_search
+&#123;
+ &quot;query&quot;: &#123;
+   &quot;bool&quot;: &#123;
+     &quot;should&quot;: [
+       &#123; &quot;match&quot;: &#123; &quot;textSrc&quot;: &quot;美食&quot; &#125; &#125;,
+       &#123; &quot;match&quot;: &#123; &quot;textSrc&quot;: &quot;海底捞&quot; &#125; &#125;
+     ]
+   &#125;
+ &#125;
+&#125;
 
-// update
+// range
+GET weibo202105/_search
+&#123;
+  &quot;query&quot;: &#123;
+    &quot;bool&quot;: &#123;
+      &quot;should&quot;: [
+        &#123;
+          &quot;match&quot;: &#123;
+            &quot;textSrc&quot;: &quot;青城山&quot;
+          &#125;
+        &#125;,
+        &#123;
+          &quot;match&quot;: &#123;
+            &quot;textSrc&quot;: &quot;天台山&quot;
+          &#125;
+        &#125;
+      ],
+      &quot;filter&quot;: &#123;
+        &quot;range&quot;: &#123;
+          &quot;time&quot;: &#123;
+            &quot;gte&quot;: &quot;2021-05-18 09:37:15&quot;,
+            &quot;lte&quot;: &quot;2021-05-21 09:37:15&quot;
+          &#125;
+        &#125;
+      &#125;
+    &#125;
+  &#125;
+&#125;
 
-更新源文件git add .
-git commit -m &#39;update&#39;
-git push origin main
+字段过滤GET news202010/_search
+&#123;
+ &quot;query&quot;: &#123;
+   &quot;match&quot;: &#123;
+     &quot;textSrc&quot;: &quot;海底捞&quot;
+   &#125;
+ &#125;,
+ &quot;_source&quot;: [&quot;mediaTname&quot;]
+&#125;
+
+排序GET news202010/_search
+&#123;
+ &quot;query&quot;: &#123;
+   &quot;match&quot;: &#123;
+     &quot;textSrc&quot;: &quot;海底捞&quot;
+   &#125;
+ &#125;,
+ &quot;sort&quot;: [
+   &#123;
+     &quot;pubtime&quot;://字段 &#123;
+       &quot;order&quot;: &quot;desc&quot;
+     &#125;
+   &#125;
+ ]
+&#125;
+
+分页GET news202010/_search
+&#123;
+ &quot;query&quot;: &#123;
+   &quot;match&quot;: &#123;
+     &quot;textSrc&quot;: &quot;海底捞&quot;
+   &#125;
+ &#125;,
+ &quot;sort&quot;: [
+   &#123;
+     &quot;pubtime&quot;: &#123;
+       &quot;order&quot;: &quot;desc&quot;
+     &#125;
+   &#125;
+ ],
+ &quot;from&quot;: 0,
+ &quot;size&quot;: 20
+&#125;
 
 ]]></content>
       <tags>
-        <tag>hexo</tag>
+        <tag>Elasticsearch</tag>
       </tags>
   </entry>
   <entry>
-    <title>Laravel 解决跨域</title>
-    <url>/2021/04/30/laravel-%E8%A7%A3%E5%86%B3%E8%B7%A8%E5%9F%9F/</url>
-    <content><![CDATA[1. 安装扩展composer require barryvdh/laravel-cors
-
-2. 发布配置文件php artisan vendor:publish --provider=&quot;Barryvdh\Cors\ServiceProvider&quot;
-
-3. 使用如果需要全局使用，可以在 app/Http/Kernel.php 的 $middleware 中增加 \Barryvdh\Cors\HandleCors::class，
+    <title>Composer required 内存溢出解决办法</title>
+    <url>/2021/05/06/composer-required-%E5%86%85%E5%AD%98%E6%BA%A2%E5%87%BA%E8%A7%A3%E5%86%B3%E5%8A%9E%E6%B3%95/</url>
+    <content><![CDATA[在使用 composer 过程中出现内存溢出错误，只需要暂时将内存设置为没有限制COMPOSER_MEMORY_LIMIT=-1 composer required(install、update)
 
 ]]></content>
-      <categories>
-        <category>PHP</category>
-      </categories>
       <tags>
-        <tag>Laravel</tag>
+        <tag>Composer</tag>
       </tags>
   </entry>
   <entry>
@@ -988,6 +913,74 @@ protected $middlewareGroups = [
       </tags>
   </entry>
   <entry>
+    <title>Laravel 解决跨域</title>
+    <url>/2021/04/30/laravel-%E8%A7%A3%E5%86%B3%E8%B7%A8%E5%9F%9F/</url>
+    <content><![CDATA[1. 安装扩展composer require barryvdh/laravel-cors
+
+2. 发布配置文件php artisan vendor:publish --provider=&quot;Barryvdh\Cors\ServiceProvider&quot;
+
+3. 使用如果需要全局使用，可以在 app/Http/Kernel.php 的 $middleware 中增加 \Barryvdh\Cors\HandleCors::class，
+
+]]></content>
+      <categories>
+        <category>PHP</category>
+      </categories>
+      <tags>
+        <tag>Laravel</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>hexo多台电脑同步</title>
+    <url>/2021/05/17/hexo%E5%A4%9A%E5%8F%B0%E7%94%B5%E8%84%91%E5%90%8C%E6%AD%A5/</url>
+    <content><![CDATA[hexo 在多台设备下进行同步设计的思路就是在 github 下创建一个公共的仓库用来存储 hexo 生成的页面，一个私有的仓库来存储 hexo 的源文件
+创建公共仓库创建私有仓库提交源文件到私有仓库上// 在初始源文件目录
+git init
+git add.
+git commit -m &#39;first commit source&#39;
+git remote add xxxxxx
+git push -u origin main
+
+这里会有一些关于主题的注意事项，等我使用了其他主题再来更新
+在其他设备上 clone 源文件使用的前提上要安装好 node、npm、hexo-cli
+npm install -g hexo-cli
+git clone xxxxxx
+cd xxxxxx
+npm install
+
+正常使用 hexohexo clean
+hexo g
+hexo d
+
+更新源文件git add .
+git commit -m &#39;update&#39;
+git push origin main
+
+]]></content>
+      <tags>
+        <tag>hexo</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>MySql8 修改密码加密方式</title>
+    <url>/2021/05/06/mysql8-%E4%BF%AE%E6%94%B9%E5%AF%86%E7%A0%81%E5%8A%A0%E5%AF%86%E6%96%B9%E5%BC%8F/</url>
+    <content><![CDATA[进入my.cnf 修改配置文件vim /etc/my.cnf
+[mysqld]
+default_authentication_plugin=mysql_native_password
+
+进入 mysql 修改配置ALTER USER &#39;root&#39;@&#39;localhost&#39; IDENTIFIED BY &#39;密码&#39; PASSWORD EXPIRE NEVER;
+ALTER USER &#39;root&#39;@&#39;localhost&#39; IDENTIFIED WITH mysql_native_password BY &#39;密码&#39;; 
+FLUSH PRIVILEGES;
+
+查看加密方式是否被改变use mysql;
+select user,plugin from user;
+// 如果出现两个root用户且加密方式不对，删除不是mysql_native_password的一个
+
+]]></content>
+      <tags>
+        <tag>MySql</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>MySql8 远程连接方式</title>
     <url>/2021/05/06/mysql8_%E8%BF%9C%E7%A8%8B%E8%BF%9E%E6%8E%A5%E6%96%B9%E5%BC%8F/</url>
     <content><![CDATA[mysql8 默认配置是不开启远程连接的，这里我们需要修改 mysql 数据库的配置来主动开启
@@ -1022,23 +1015,20 @@ npm run serve
       </tags>
   </entry>
   <entry>
-    <title>MySql8 修改密码加密方式</title>
-    <url>/2021/05/06/mysql8-%E4%BF%AE%E6%94%B9%E5%AF%86%E7%A0%81%E5%8A%A0%E5%AF%86%E6%96%B9%E5%BC%8F/</url>
-    <content><![CDATA[进入my.cnf 修改配置文件vim /etc/my.cnf
-[mysqld]
-default_authentication_plugin=mysql_native_password
+    <title>wsl2安装node工具</title>
+    <url>/2021/05/17/wsl2%E5%AE%89%E8%A3%85node%E5%B7%A5%E5%85%B7/</url>
+    <content><![CDATA[安装 curlsudo apt-get install curl
 
-进入 mysql 修改配置ALTER USER &#39;root&#39;@&#39;localhost&#39; IDENTIFIED BY &#39;密码&#39; PASSWORD EXPIRE NEVER;
-ALTER USER &#39;root&#39;@&#39;localhost&#39; IDENTIFIED WITH mysql_native_password BY &#39;密码&#39;; 
-FLUSH PRIVILEGES;
+安装 nvmnvm：curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/*/install.sh | bash
+// 版本可以参照最新的 nvm 版本 [nvm github](https://github.com/nvm-sh/nvm)
 
-查看加密方式是否被改变use mysql;
-select user,plugin from user;
-// 如果出现两个root用户且加密方式不对，删除不是mysql_native_password的一个
+安装 node LTS 版本nvm install node --lts
+
+查看nvmnvm ls
 
 ]]></content>
       <tags>
-        <tag>MySql</tag>
+        <tag>wsl2</tag>
       </tags>
   </entry>
   <entry>
@@ -1095,6 +1085,48 @@ v-on(简写 ‘@’)
 计算属性]]></content>
       <tags>
         <tag>Vue</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>连接 docker mysql 容器</title>
+    <url>/2021/05/06/%E8%BF%9E%E6%8E%A5-docker-mysql-%E5%AE%B9%E5%99%A8/</url>
+    <content><![CDATA[创建新 mysql 容器docker pull mysql
+
+启动 mysql 容器sudo docker run -p 63306:3306 --name mysql -e MYSQL_ROOT_PASSWORD=root -d mysql
+// 将容器的 3306 端口映射到主机的 63306 端口，密码为root
+
+进入mysql容器docker exec -it mysql bash
+
+在主机连接容器mysql -uroot -proot -P63306 -h127.0.0.1
+
+]]></content>
+      <tags>
+        <tag>Docker</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Mysql8-root密码忘记找回</title>
+    <url>/2021/06/07/Mysql8-root%E5%AF%86%E7%A0%81%E5%BF%98%E8%AE%B0%E6%89%BE%E5%9B%9E/</url>
+    <content><![CDATA[停止 Mysql 服务brew services stop mysql
+
+进入 Mysql 安装目录// 查看mysql安装目录：brew info mysql
+cd /usr/local/Cellar/mysql/8.0.16/bin
+
+启动 Mysql，免密登录./mysqld_safe --skip-grant-tables --user=root &amp;
+
+修改密码mysql -uroot
+update mysql.user set authentication_string=&#39;&#39; where user=&#39;root&#39;;
+
+关闭 Mysql 服务ps -ef | grep mysql
+kill 9 【mysql进程号】
+
+通过brew启动mysql服务，修改root密码brew services start mysql
+mysql -uroot -p (提示输入密码时直接enter)
+ALTER user &#39;root&#39;@&#39;localhost&#39; IDENTIFIED BY &#39;password&#39;;
+
+]]></content>
+      <tags>
+        <tag>Mysql</tag>
       </tags>
   </entry>
   <entry>
@@ -1762,40 +1794,6 @@ http：被篡改被访问的内容
 ]]></content>
       <tags>
         <tag>面试总结</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>wsl2安装node工具</title>
-    <url>/2021/05/17/wsl2%E5%AE%89%E8%A3%85node%E5%B7%A5%E5%85%B7/</url>
-    <content><![CDATA[安装 curlsudo apt-get install curl
-
-安装 nvmnvm：curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/*/install.sh | bash
-// 版本可以参照最新的 nvm 版本 [nvm github](https://github.com/nvm-sh/nvm)
-
-安装 node LTS 版本nvm install node --lts
-
-查看nvmnvm ls
-
-]]></content>
-      <tags>
-        <tag>wsl2</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>连接 docker mysql 容器</title>
-    <url>/2021/05/06/%E8%BF%9E%E6%8E%A5-docker-mysql-%E5%AE%B9%E5%99%A8/</url>
-    <content><![CDATA[创建新 mysql 容器docker pull mysql
-
-启动 mysql 容器sudo docker run -p 63306:3306 --name mysql -e MYSQL_ROOT_PASSWORD=root -d mysql
-// 将容器的 3306 端口映射到主机的 63306 端口，密码为root
-
-进入mysql容器docker exec -it mysql bash
-
-在主机连接容器mysql -uroot -proot -P63306 -h127.0.0.1
-
-]]></content>
-      <tags>
-        <tag>Docker</tag>
       </tags>
   </entry>
 </search>
